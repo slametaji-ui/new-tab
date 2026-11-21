@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Tab</title>
+  <link rel="icon" type="image/png" href="icons/icon48.png" />
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+<body class="font-sans">
+  <!-- Background Layers -->
+  <div id="bg-layer" class="bg-layer" aria-hidden="true"></div>
+  <div id="bg-scrim" class="bg-scrim" aria-hidden="true"></div>
+
+  <!-- Main Viewport -->
+  <main class="viewport">
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <div class="top-left">
+        <button id="btn-refresh-bg" class="icon-btn subtle-control" title="Change background" aria-label="Change background">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="3" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <path d="M21 15l-5-5L5 21" />
+          </svg>
+        </button>
+      </div>
+
+      <div id="weather-widget" class="weather-widget glass-pill" title="Click to refresh weather">
+        <span id="weather-icon" class="weather-icon"></span>
+        <span id="weather-temp" class="weather-temp">--°</span>
+        <span id="weather-city" class="weather-city">Loading...</span>
+      </div>
+    </header>
+
+    <!-- Centerpiece -->
+    <section class="center-stage">
+      <!-- Clock & Date -->
+      <div id="clock-widget" class="clock-widget">
+        <div id="clock-time" class="clock-time">00:00</div>
+        <div id="clock-date" class="clock-date">Saturday, November 21</div>
+      </div>
+
+      <!-- Greeting -->
+      <h1 id="greeting-widget" class="greeting-widget">Good morning.</h1>
+
+      <!-- Search Bar -->
+      <form id="search-widget" class="search-widget glass-surface" autocomplete="off">
+        <button type="button" id="search-engine-btn" class="search-engine-btn" title="Switch search engine" aria-label="Switch search engine">
+          <span id="search-engine-label">G</span>
+        </button>
+        <input
+          type="text"
+          id="search-input"
+          class="search-input"
+          placeholder="Search the web... (press /)"
+          aria-label="Search the web"
+        />
+        <button type="submit" class="search-submit-btn" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </button>
+      </form>
+
+      <!-- Quick Links -->
+      <div id="links-widget" class="links-widget" aria-label="Quick links">
+        <div id="links-grid" class="links-grid"></div>
+      </div>
+
+      <!-- Focus / Todo -->
+      <div id="focus-widget" class="focus-widget">
+        <div class="focus-prompt" id="focus-prompt-wrap">
+          <label for="focus-input" class="focus-label">What is your main focus today?</label>
+          <input type="text" id="focus-input" class="focus-input" maxlength="80" placeholder="Write your focus..." />
+        </div>
+        <div class="focus-active hidden" id="focus-active-wrap">
+          <button type="button" id="focus-check-btn" class="focus-check-btn" aria-label="Complete focus">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </button>
+          <span id="focus-text" class="focus-text"></span>
+          <button type="button" id="focus-clear-btn" class="focus-clear-btn" title="Clear focus" aria-label="Clear focus">&times;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom Bar -->
+    <footer class="bottom-bar">
+      <div class="bottom-left">
+        <button id="btn-open-settings" class="icon-btn subtle-control" title="Customize" aria-label="Open settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+        </button>
+      </div>
+
+      <div id="quote-widget" class="quote-widget">
+        <p id="quote-text" class="quote-text"></p>
+        <span id="quote-author" class="quote-author"></span>
+      </div>
+
+      <div class="bottom-right">
+        <span id="bg-credit" class="bg-credit"></span>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Settings Drawer Backdrop -->
+  <div id="settings-backdrop" class="settings-backdrop hidden"></div>
+
+  <!-- Settings Drawer -->
+  <aside id="settings-drawer" class="settings-drawer glass-drawer hidden" aria-label="Customization settings">
+    <div class="drawer-header">
+      <h2>Customize</h2>
+      <button id="btn-close-settings" class="icon-btn" aria-label="Close settings">&times;</button>
+    </div>
+
+    <div class="drawer-body">
+      <!-- Profile & Language -->
+      <section class="settings-section">
+        <h3>General</h3>
+        <div class="field-row">
+          <label for="opt-name">Your Name</label>
+          <input type="text" id="opt-name" class="text-input" placeholder="e.g. Alex" maxlength="32" />
+        </div>
+        <div class="field-row">
+          <label for="opt-lang">Language</label>
+          <select id="opt-lang" class="select-input">
+            <option value="en">English</option>
+            <option value="id">Bahasa Indonesia</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <label for="opt-font">Typography</label>
+          <select id="opt-font" class="select-input">
+            <option value="sans">Modern Sans</option>
+            <option value="serif">Editorial Serif</option>
+            <option value="mono">Minimal Mono</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Widgets -->
+      <section class="settings-section">
+        <h3>Widgets</h3>
+        <label class="toggle-row">
+          <span>Clock</span>
+          <input type="checkbox" id="opt-show-clock" />
+        </label>
+        <label class="toggle-row">
+          <span>24-Hour Format</span>
+          <input type="checkbox" id="opt-24h" />
+        </label>
+        <label class="toggle-row">
+          <span>Show Seconds</span>
+          <input type="checkbox" id="opt-seconds" />
+        </label>
+        <label class="toggle-row">
+          <span>Greeting</span>
+          <input type="checkbox" id="opt-show-greeting" />
+        </label>
+        <label class="toggle-row">
+          <span>Search Bar</span>
+          <input type="checkbox" id="opt-show-search" />
+        </label>
+        <label class="toggle-row">
+          <span>Quick Links</span>
+          <input type="checkbox" id="opt-show-links" />
+        </label>
+        <label class="toggle-row">
+          <span>Daily Focus</span>
+          <input type="checkbox" id="opt-show-focus" />
+        </label>
+        <label class="toggle-row">
+          <span>Weather</span>
+          <input type="checkbox" id="opt-show-weather" />
+        </label>
+        <label class="toggle-row">
+          <span>Daily Quote</span>
+          <input type="checkbox" id="opt-show-quote" />
+        </label>
+      </section>
+
+      <!-- Weather City -->
+      <section class="settings-section">
+        <h3>Weather Location</h3>
+        <div class="field-row">
+          <input type="text" id="opt-city" class="text-input" placeholder="City name (blank = auto GPS)" />
+          <button type="button" id="btn-save-city" class="btn-secondary">Set</button>
+        </div>
+      </section>
+
+      <!-- Background -->
+      <section class="settings-section">
+        <h3>Background</h3>
+        <div class="field-row">
+          <label for="opt-bg-mode">Source</label>
+          <select id="opt-bg-mode" class="select-input">
+            <option value="gradient">Curated Gradients</option>
+            <option value="photo">Daily Photography</option>
+            <option value="custom">Custom Image / URL</option>
+          </select>
+        </div>
+
+        <div id="gradient-picker" class="gradient-picker"></div>
+
+        <div id="custom-bg-controls" class="custom-bg-controls hidden">
+          <div class="field-row">
+            <input type="url" id="opt-bg-url" class="text-input" placeholder="Paste image URL..." />
+            <button type="button" id="btn-apply-url" class="btn-secondary">Apply</button>
+          </div>
+          <label class="btn-upload">
+            Upload Local Image
+            <input type="file" id="opt-bg-file" accept="image/*" hidden />
+          </label>
+        </div>
+
+        <div class="slider-row">
+          <label for="opt-blur">Blur <span id="val-blur">0px</span></label>
+          <input type="range" id="opt-blur" min="0" max="24" step="1" />
+        </div>
+        <div class="slider-row">
+          <label for="opt-dim">Dim Overlay <span id="val-dim">25%</span></label>
+          <input type="range" id="opt-dim" min="0" max="75" step="5" />
+        </div>
+      </section>
+
+      <!-- Quick Links Manager -->
+      <section class="settings-section">
+        <h3>Quick Links</h3>
+        <div id="links-manager-list" class="links-manager-list"></div>
+        <div class="add-link-form">
+          <input type="text" id="new-link-title" class="text-input" placeholder="Title (e.g. GitHub)" maxlength="24" />
+          <input type="url" id="new-link-url" class="text-input" placeholder="https://github.com" />
+          <button type="button" id="btn-add-link" class="btn-primary">Add Link</button>
+        </div>
+      </section>
+
+      <!-- Backup -->
+      <section class="settings-section">
+        <h3>Backup &amp; Reset</h3>
+        <div class="btn-group">
+          <button type="button" id="btn-export" class="btn-secondary">Export JSON</button>
+          <label class="btn-secondary btn-file">
+            Import JSON
+            <input type="file" id="opt-import" accept="application/json" hidden />
+          </label>
+          <button type="button" id="btn-reset" class="btn-danger">Reset</button>
+        </div>
+      </section>
+    </div>
+  </aside>
+
+  <script src="scripts/storage.js"></script>
+  <script src="scripts/presets.js"></script>
+  <script src="scripts/app.js"></script>
+</body>
+</html>
