@@ -27,6 +27,10 @@
     weatherIcon: document.getElementById("weather-icon"),
     weatherTemp: document.getElementById("weather-temp"),
     weatherCity: document.getElementById("weather-city"),
+    weatherFeels: document.getElementById("weather-feels"),
+    weatherFeelsLabel: document.getElementById("weather-feels-label"),
+    weatherHumidity: document.getElementById("weather-humidity"),
+    weatherHumidityLabel: document.getElementById("weather-humidity-label"),
     quoteWidget: document.getElementById("quote-widget"),
     quoteText: document.getElementById("quote-text"),
     quoteAuthor: document.getElementById("quote-author"),
@@ -60,6 +64,7 @@
     valBlur: document.getElementById("val-blur"),
     optDim: document.getElementById("opt-dim"),
     valDim: document.getElementById("val-dim"),
+    optLinksLayout: document.getElementById("opt-links-layout"),
     linksManagerList: document.getElementById("links-manager-list"),
     newLinkTitle: document.getElementById("new-link-title"),
     newLinkUrl: document.getElementById("new-link-url"),
@@ -87,6 +92,8 @@
     el.searchInput.placeholder = t.searchPlaceholder;
     el.focusLabel.textContent = t.focusLabel;
     el.focusInput.placeholder = t.focusPlaceholder;
+    el.weatherFeelsLabel.textContent = t.feelsLike;
+    el.weatherHumidityLabel.textContent = t.humidity;
   }
 
   function updateClockAndGreeting() {
@@ -186,6 +193,9 @@
 
   function renderLinks() {
     el.linksGrid.innerHTML = "";
+    const layout = settings.linksLayout || "flex";
+    el.linksGrid.className = "links-grid" + (layout !== "flex" ? ` is-grid ${layout}` : "");
+
     settings.links.forEach((link) => {
       const a = document.createElement("a");
       a.className = "link-chip";
@@ -268,14 +278,36 @@
     el.quoteAuthor.textContent = `— ${q.author}`;
   }
 
-  function weatherCodeToIcon(code) {
-    if (code === 0) return "☀️";
-    if (code <= 3) return "⛅";
-    if (code <= 48) return "🌫️";
-    if (code <= 67) return "🌧️";
-    if (code <= 77) return "❄️";
-    if (code <= 82) return "🌦️";
-    return "⛈️";
+  function weatherCodeToSvg(code) {
+    const base = 'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
+    if (code === 0) {
+      return `<svg ${base}><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`;
+    }
+    if (code <= 3) {
+      return `<svg ${base}><path d="M17.5 19H9a5 5 0 1 1 1.7-9.7A4.5 4.5 0 0 1 19.5 11a3.5 3.5 0 0 1-2 8z"/></svg>`;
+    }
+    if (code <= 48) {
+      return `<svg ${base}><path d="M4 14h16M4 18h12M6 10h12"/></svg>`;
+    }
+    if (code <= 67 || (code >= 80 && code <= 82)) {
+      return `<svg ${base}><path d="M17.5 16H9a5 5 0 1 1 1.7-9.7A4.5 4.5 0 0 1 19.5 8a3.5 3.5 0 0 1-2 8z"/><path d="M10 19v2M14 19v2"/></svg>`;
+    }
+    if (code <= 77) {
+      return `<svg ${base}><path d="M17.5 16H9a5 5 0 1 1 1.7-9.7A4.5 4.5 0 0 1 19.5 8a3.5 3.5 0 0 1-2 8z"/><path d="M9 19h.01M13 20h.01M16 19h.01"/></svg>`;
+    }
+    return `<svg ${base}><path d="M17.5 16H9a5 5 0 1 1 1.7-9.7A4.5 4.5 0 0 1 19.5 8a3.5 3.5 0 0 1-2 8z"/><path d="m13 16-2 4h3l-1 3"/></svg>`;
+  }
+
+  async function reverseGeocode(lat, lon) {
+    try {
+      const res = await fetch(
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`
+      );
+      const data = await res.json();
+      return data.locality || data.city || data.principalSubdivision || "Local";
+    } catch {
+      return "Local";
+    }
   }
 
   async function fetchWeather() {
@@ -290,6 +322,8 @@
         if (!geoData.results || !geoData.results.length) {
           el.weatherCity.textContent = "City not found";
           el.weatherTemp.textContent = "--°";
+          el.weatherFeels.textContent = "--°";
+          el.weatherHumidity.textContent = "--%";
           return;
         }
         lat = geoData.results[0].latitude;
@@ -298,27 +332,37 @@
       } else {
         const pos = await new Promise((resolve, reject) => {
           if (!navigator.geolocation) return reject(new Error("No geo"));
-          navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 6000 });
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: false,
+            timeout: 8000,
+            maximumAge: 300000
+          });
         });
         lat = pos.coords.latitude;
         lon = pos.coords.longitude;
-        cityName = "Local";
+        cityName = await reverseGeocode(lat, lon);
       }
 
       const wRes = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code`
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code`
       );
       const wData = await wRes.json();
       const temp = Math.round(wData.current.temperature_2m);
+      const feels = Math.round(wData.current.apparent_temperature);
+      const humidity = Math.round(wData.current.relative_humidity_2m);
       const code = wData.current.weather_code;
 
-      el.weatherIcon.textContent = weatherCodeToIcon(code);
-      el.weatherTemp.textContent = `${temp}°C`;
+      el.weatherIcon.innerHTML = weatherCodeToSvg(code);
+      el.weatherTemp.textContent = `${temp}°`;
       el.weatherCity.textContent = cityName;
+      el.weatherFeels.textContent = `${feels}°`;
+      el.weatherHumidity.textContent = `${humidity}%`;
     } catch {
-      el.weatherIcon.textContent = "🌤️";
+      el.weatherIcon.innerHTML = weatherCodeToSvg(2);
       el.weatherTemp.textContent = "--°";
-      el.weatherCity.textContent = settings.city || "Set city";
+      el.weatherCity.textContent = settings.city || "Location unavailable";
+      el.weatherFeels.textContent = "--°";
+      el.weatherHumidity.textContent = "--%";
     }
   }
 
@@ -342,6 +386,7 @@
     el.valBlur.textContent = `${settings.blur}px`;
     el.optDim.value = settings.dim;
     el.valDim.textContent = `${settings.dim}%`;
+    el.optLinksLayout.value = settings.linksLayout || "flex";
   }
 
   function openDrawer() {
@@ -520,6 +565,13 @@
       settings.dim = Number(el.optDim.value);
       el.valDim.textContent = `${settings.dim}%`;
       renderBackground();
+      saveSettings();
+    });
+
+    // Quick links layout
+    el.optLinksLayout.addEventListener("change", () => {
+      settings.linksLayout = el.optLinksLayout.value;
+      renderLinks();
       saveSettings();
     });
 

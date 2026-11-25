@@ -22,6 +22,7 @@ window.LuminaPresets = {
     dim: 25,
     focusText: "",
     focusDone: false,
+    linksLayout: "flex",
     links: [
       { title: "YouTube", url: "https://www.youtube.com" },
       { title: "GitHub", url: "https://github.com" },
@@ -91,7 +92,9 @@ window.LuminaPresets = {
       night: "Good night",
       searchPlaceholder: "Search the web... (press /)",
       focusLabel: "What is your main focus today?",
-      focusPlaceholder: "Write your focus..."
+      focusPlaceholder: "Write your focus...",
+      feelsLike: "Feels like",
+      humidity: "Humidity"
     },
     id: {
       morning: "Selamat pagi",
@@ -100,7 +103,9 @@ window.LuminaPresets = {
       night: "Selamat malam",
       searchPlaceholder: "Cari di web... (tekan /)",
       focusLabel: "Apa fokus utamamu hari ini?",
-      focusPlaceholder: "Tulis fokusmu..."
+      focusPlaceholder: "Tulis fokusmu...",
+      feelsLike: "Terasa seperti",
+      humidity: "Kelembapan"
     }
   }
 };
